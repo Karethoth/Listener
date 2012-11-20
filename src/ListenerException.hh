@@ -9,11 +9,11 @@ class ListenerException : public std::exception
 {
  private:
   std::string message;
-  char *file;
+  std::string file;
   int line;
 
  public:
-  ListenerException( std::string message, char *file, int line );
+  ListenerException( std::string message, std::string file, int line );
   ~ListenerException() throw();
 
   virtual const char* what() const throw();

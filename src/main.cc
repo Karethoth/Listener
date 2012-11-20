@@ -1,7 +1,12 @@
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
+
+#ifdef __WIN32__
+#include <windows.h>
+#endif
+
+#include <GL/glut.h>
 #include <iostream>
-#include <SDL/SDL.h>
 using namespace std;
 
 #include "Sample.hh"
@@ -24,44 +29,59 @@ const float hRatio = 400.0 / 32768.5;
 const float wRatio = SSIZE / SSIZE;
 
 
-void PutPixel32_nolock(SDL_Surface * surface, int x, int y, Uint32 color)
+// The Listener
+Listener listener;
+
+
+void Render()
 {
-  Uint8 * pixel = (Uint8*)surface->pixels;
-  pixel += (y * surface->pitch) + (x * sizeof(Uint32));
-  *((Uint32*)pixel) = color;
+  glClear( GL_COLOR_BUFFER_BIT );
+
+  glutSwapBuffers();
 }
 
 
 
-void Draw( SDL_Surface *screen )
+void Idle()
 {
-  SDL_FillRect( screen, NULL, 0x000000 );
+  // Listen and record if needed
+  Sample *currentSample = listener.Listen();
 
-  SDL_Flip( screen );
+  if( !currentSample )
+    return;
+
+  std::vector<Sample*> *finished = listener.GetFinishedSamples();
+  if( finished->size() > 0 )
+  {
+    finished->clear();
+  }
 }
 
 
 
-int main( int argc, char *argv[] )
+int main( int argc, char **argv )
 {
 
-  // Init SDL
-  SDL_Surface *screen = NULL;
-  SDL_Init( SDL_INIT_EVERYTHING );
-  screen = SDL_SetVideoMode( 1200, 800, 32, SDL_SWSURFACE );
+  // Init glut
+  glutInit( &argc, argv );
+  glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA );
+  glutInitWindowPosition( 0, 0 );
+  glutInitWindowSize( 1200, 800 );
+  glutCreateWindow( "Listener" );
+
+  glutDisplayFunc( Render );
+  glutIdleFunc( Idle );
 
 
+  // Open the default recording device
   alGetError();
-  ALCdevice *device = alcCaptureOpenDevice(NULL, SRATE, AL_FORMAT_MONO16, SSIZE);
-  if (alGetError() != AL_NO_ERROR)
+  ALCdevice *device = alcCaptureOpenDevice( NULL, SRATE, AL_FORMAT_MONO16, SSIZE );
+  if( alGetError() != AL_NO_ERROR )
   {
       return 0;
   }
 
-  // Instancize the Listener
-  Listener listener = Listener();
-
-  // Try to initialize it
+  // Initialize the Listener
   try
   {
     listener.Init( device,
@@ -82,27 +102,9 @@ int main( int argc, char *argv[] )
   alcCaptureStart( device );
 
 
-  // The main loop
-  while( true )
-  {
-    // Listen and record if needed
-    Sample *currentSample = listener.Listen();
+  // Start the main loop
+  glutMainLoop();
 
-    if( !currentSample )
-      continue;
-
-    std::vector<Sample*> *finished = listener.GetFinishedSamples();
-    if( finished->size() > 0 )
-    {
-      finished->clear();
-    }
-
-    // Draw the GUI
-    Draw( screen );
-
-    // Delay to free up some processor time
-    SDL_Delay( 1 );
-  }
 
   // Stop capturing
   alcCaptureStop( device );

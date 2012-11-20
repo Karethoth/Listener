@@ -1,7 +1,7 @@
 #include "ListenerException.hh"
 #include <sstream>
 
-ListenerException::ListenerException( std::string message, char *file, int line )
+ListenerException::ListenerException( std::string message, std::string file, int line )
 {
   this->message = message;
   this->file    = file;

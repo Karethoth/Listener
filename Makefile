@@ -1,8 +1,8 @@
 TGT = listener
 CC  = g++
 
-CFLAGS = -Wall -c -g
-LFLAGS = -lSDL -lOpenAL32 -g
+CFLAGS = -Wall -c
+LFLAGS = -lOpenAL32 -lglut32 -lopengl32 -lglu32 -g
 
 SRCS = \
 	src/Sample.cc \
