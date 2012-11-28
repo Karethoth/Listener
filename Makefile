@@ -2,9 +2,10 @@ TGT = listener
 CC  = g++
 
 CFLAGS = -Wall -c
-LFLAGS = -lOpenAL32 -lglut32 -lopengl32 -lglu32 -g
+LFLAGS = -lOpenAL32 -lglut -lopengl32 -lglu32 -g
 
 SRCS = \
+	src/gui/Element.cc \
 	src/Sample.cc \
 	src/ListenerException.cc \
 	src/Listener.cc \
@@ -24,6 +25,7 @@ obj/%.o : src/%.cc
 
 obj :
 	mkdir obj
+	mkdir obj/gui
 
 clean :
 	rm -f $(TGT) obj/*.o
