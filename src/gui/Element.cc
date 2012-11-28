@@ -4,6 +4,7 @@ using std::map;
 using std::pair;
 using std::string;
 
+using GUI::Box;
 using GUI::Element;
 
 
@@ -55,5 +56,30 @@ bool Element::Remove( string key )
     return true;
 
   return false;
+}
+
+
+
+void Element::SetArea( struct Box area )
+{
+  this->area = area;
+}
+
+
+
+void Element::SetArea( int x, int y,
+                       int width, int height )
+{
+  area.x = x;
+  area.y = y;
+
+  area.width  = width;
+  area.height = height;
+}
+
+
+struct Box Element::GetArea()
+{
+  return area;
 }
 

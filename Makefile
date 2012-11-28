@@ -6,6 +6,7 @@ LFLAGS = -lOpenAL32 -lglut -lopengl32 -lglu32 -g
 
 SRCS = \
 	src/gui/Element.cc \
+	src/gui/GUI.cc \
 	src/Sample.cc \
 	src/ListenerException.cc \
 	src/Listener.cc \

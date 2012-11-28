@@ -7,10 +7,19 @@
 
 namespace GUI
 {
+  struct Box
+  {
+    int x, y;
+    int width, height;
+  };
+
+
+
   class Element
   {
-   private:
+   protected:
     std::map<std::string, Element*> children;
+    struct Box area;
 
     void RenderChildren();
 
@@ -22,6 +31,10 @@ namespace GUI
 
     bool Add( std::string, Element* );
     bool Remove( std::string );
+
+    void SetArea( struct Box );
+    void SetArea( int, int, int, int );
+    struct Box GetArea();
   };
 };
 
