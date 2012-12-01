@@ -103,6 +103,13 @@ vector<Sample*>* Listener::GetFinishedSamples()
 
 
 
+void Listener::SetThreshold( int threshold )
+{
+  this->threshold = threshold;
+}
+
+
+
 void Listener::HandleAudioSamples()
 {
   /*

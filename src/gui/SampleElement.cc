@@ -23,6 +23,9 @@ SampleElement::SampleElement()
 SampleElement::SampleElement( Sample *sample )
 {
   SetSample( sample );
+
+  threshold     = 0;
+  showThreshold = false;
 }
 
 
@@ -42,6 +45,20 @@ SampleElement::~SampleElement()
 void SampleElement::SetSample( Sample *sample )
 {
   this->sample = sample;
+}
+
+
+
+void SampleElement::SetThreshold( short threshold )
+{
+  this->threshold = threshold;
+}
+
+
+
+void SampleElement::ShowThreshold( bool value )
+{
+  showThreshold = value;
 }
 
 
@@ -100,5 +117,19 @@ void SampleElement::Render()
     glVertex2f( xTmp, yTmp );
   }
   glEnd();
+
+  // If requested, render the threshold lines
+  if( showThreshold )
+  {
+    yTmp = threshold * yRatio;
+
+    glColor4f( 0.5, 0.5, 1.0, 0.5 );
+    glBegin( GL_LINES );
+      glVertex2f( ax, yMiddle+yTmp );
+      glVertex2f( bx, yMiddle+yTmp );
+      glVertex2f( ax, yMiddle-yTmp );
+      glVertex2f( bx, yMiddle-yTmp );
+    glEnd();
+  }
 }
 

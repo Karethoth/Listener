@@ -57,6 +57,7 @@ class Listener
   // Returns reference to the finished samples.
   std::vector<Sample*>* GetFinishedSamples();
 
+  void SetThreshold( int );
 
 
  protected:

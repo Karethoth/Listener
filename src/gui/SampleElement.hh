@@ -11,6 +11,8 @@ namespace GUI
   {
    private:
     Sample *sample;
+    short   threshold;
+    bool    showThreshold;
 
 
    public:
@@ -21,6 +23,9 @@ namespace GUI
     void Render();
 
     void SetSample( Sample* );
+
+    void SetThreshold( short );
+    void ShowThreshold( bool );
   };
 };
 

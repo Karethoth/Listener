@@ -7,6 +7,7 @@
 
 #include <GL/glut.h>
 #include <iostream>
+#include <climits>
 
 #include "gui/GUI.hh"
 #include "gui/SampleElement.hh"
@@ -19,28 +20,18 @@ using namespace std;
 using GUI::SampleElement;
 
 
-const int TRESHOLD = 200;
-const int TRESHOLD_COUNT = 500;
-
+// Consts
 const int SRATE = 44100;
 const int SSIZE = 882;
-
-ALbyte buffer[22050];
-ALint samplesAvailable;
-
-bool isSampling = false;
-int tresholdCounter = 0;
-
-
-const float hRatio = 400.0 / 32768.5;
-const float wRatio = SSIZE / SSIZE;
-
 
 // The GUI
 GUI::GUI gui;
 
 // The Listener
 Listener listener;
+
+// Threshold
+int threshold = 200;
 
 
 
@@ -85,7 +76,52 @@ void Idle()
     glutPostRedisplay();
   }
 
+  // Memory leak:
   finished->clear();
+}
+
+
+
+void ProcessKeyInput( unsigned char key, int x, int y )
+{
+  bool thresholdChanged = false;
+
+  switch( key )
+  {
+    // If +
+    case 43:
+      threshold += 20;
+      thresholdChanged = true;
+      break;
+
+    // If -
+    case 45:
+      threshold -= 20;
+      thresholdChanged = true;
+      break;
+
+    // If ESC
+    case 27:
+      exit( 0 );
+      break;
+  }
+
+  if( thresholdChanged )
+  {
+    if( threshold < 0 )
+      threshold = 0;
+    else if( threshold >= SHRT_MAX )
+      threshold = SHRT_MAX;
+
+    listener.SetThreshold( threshold );
+
+    SampleElement *se = static_cast<SampleElement*>( gui.GetChild( "SAMPLE" ) );
+    if( se )
+    {
+      se->SetThreshold( threshold );
+      glutPostRedisplay();
+    }
+  }
 }
 
 
@@ -102,10 +138,13 @@ int main( int argc, char **argv )
 
   glutDisplayFunc( Render );
   glutIdleFunc( Idle );
+  glutKeyboardFunc( ProcessKeyInput );
 
 
   // Set the GUI up
   SampleElement *se = new SampleElement();
+  se->SetThreshold( 200 );
+  se->ShowThreshold( true );
   gui.SetArea( 0, 0, 1200, 800 );
   gui.Add( "SAMPLE", se );
 
@@ -125,7 +164,7 @@ int main( int argc, char **argv )
                    44100,
                    AL_FORMAT_MONO16,
                    400,
-                   200,
+                   threshold,
                    4000 );
   }
   catch( ListenerException &e )
