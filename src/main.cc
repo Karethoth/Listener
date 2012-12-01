@@ -124,9 +124,9 @@ int main( int argc, char **argv )
     listener.Init( device,
                    44100,
                    AL_FORMAT_MONO16,
-                   1000,
-                   150,
-                   2000 );
+                   400,
+                   200,
+                   4000 );
   }
   catch( ListenerException &e )
   {

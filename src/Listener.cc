@@ -120,7 +120,7 @@ void Listener::HandleAudioSamples()
   // Push audio samples to the vector
   for( int i=0; i < bufferSize; ++i )
   {
-    audioSampleVector.push_back( *p );
+    audioSampleVector.push_back( *(p++) );
   }
 
 
