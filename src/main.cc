@@ -7,10 +7,17 @@
 
 #include <GL/glut.h>
 #include <iostream>
-using namespace std;
 
+#include "gui/GUI.hh"
+#include "gui/SampleElement.hh"
 #include "Sample.hh"
 #include "Listener.hh"
+
+
+using namespace std;
+
+using GUI::SampleElement;
+
 
 const int TRESHOLD = 200;
 const int TRESHOLD_COUNT = 500;
@@ -29,13 +36,19 @@ const float hRatio = 400.0 / 32768.5;
 const float wRatio = SSIZE / SSIZE;
 
 
+// The GUI
+GUI::GUI gui;
+
 // The Listener
 Listener listener;
+
 
 
 void Render()
 {
   glClear( GL_COLOR_BUFFER_BIT );
+
+  gui.Render();
 
   glutSwapBuffers();
 }
@@ -44,17 +57,35 @@ void Render()
 
 void Idle()
 {
+  SampleElement *se = static_cast<SampleElement*>( gui.GetChild( "SAMPLE" ) );
+
   // Listen and record if needed
   Sample *currentSample = listener.Listen();
 
-  if( !currentSample )
-    return;
+  if( currentSample && se )
+  {
+    if( currentSample->GetData().size() > 50 )
+    {
+      se->SetSample( currentSample );
+      glutPostRedisplay();
+      return;
+    }
+  }
 
   std::vector<Sample*> *finished = listener.GetFinishedSamples();
-  if( finished->size() > 0 )
+  if( finished->size() <= 0 )
+    return;
+
+
+  if( se )
   {
-    finished->clear();
+    Sample *sample = *(finished->begin());
+    finished->erase( finished->begin() );
+    se->SetSample( sample );
+    glutPostRedisplay();
   }
+
+  finished->clear();
 }
 
 
@@ -73,6 +104,12 @@ int main( int argc, char **argv )
   glutIdleFunc( Idle );
 
 
+  // Set the GUI up
+  SampleElement *se = new SampleElement();
+  gui.SetArea( 0, 0, 1200, 800 );
+  gui.Add( "SAMPLE", se );
+
+
   // Open the default recording device
   alGetError();
   ALCdevice *device = alcCaptureOpenDevice( NULL, SRATE, AL_FORMAT_MONO16, SSIZE );
@@ -87,9 +124,9 @@ int main( int argc, char **argv )
     listener.Init( device,
                    44100,
                    AL_FORMAT_MONO16,
-                   400,
+                   1000,
                    150,
-                   4000 );
+                   2000 );
   }
   catch( ListenerException &e )
   {

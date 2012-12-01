@@ -32,6 +32,8 @@ namespace GUI
     bool Add( std::string, Element* );
     bool Remove( std::string );
 
+    Element* GetChild( std::string );
+
     void SetArea( struct Box );
     void SetArea( int, int, int, int );
     struct Box GetArea();

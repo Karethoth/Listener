@@ -5,9 +5,11 @@ CFLAGS = -Wall -c
 LFLAGS = -lOpenAL32 -lglut -lopengl32 -lglu32 -g
 
 SRCS = \
+	src/Sample.cc \
 	src/gui/Element.cc \
 	src/gui/GUI.cc \
-	src/Sample.cc \
+	src/gui/Grid.cc \
+	src/gui/SampleElement.cc \
 	src/ListenerException.cc \
 	src/Listener.cc \
 	src/main.cc \
@@ -29,4 +31,4 @@ obj :
 	mkdir obj/gui
 
 clean :
-	rm -f $(TGT) obj/*.o
+	rm -f $(TGT) obj/*.o obj/*/*.o

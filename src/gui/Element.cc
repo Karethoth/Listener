@@ -42,6 +42,8 @@ void Element::Render()
 
 bool Element::Add( string key, Element *value )
 {
+  value->SetArea( area.x, area.y, area.width, area.height );
+
   pair<map<string, Element*>::iterator, bool> ret;
   ret = children.insert( pair<string, Element*>( key, value ) );
 
@@ -60,9 +62,16 @@ bool Element::Remove( string key )
 
 
 
+Element* Element::GetChild( string key )
+{
+  return children[key];
+}
+
+
+
 void Element::SetArea( struct Box area )
 {
-  this->area = area;
+  SetArea( area.x, area.y, area.width, area.height );
 }
 
 
@@ -70,11 +79,11 @@ void Element::SetArea( struct Box area )
 void Element::SetArea( int x, int y,
                        int width, int height )
 {
-  area.x = x;
+  area.x = x+1;
   area.y = y;
 
-  area.width  = width;
-  area.height = height;
+  area.width  = width-2;
+  area.height = height-1;
 }
 
 

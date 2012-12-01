@@ -1,4 +1,7 @@
 #include "GUI.hh"
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
 
 using std::map;
 using std::pair;
@@ -19,6 +22,11 @@ GUI::GUI::~GUI()
 
 void GUI::GUI::Render()
 {
+  glMatrixMode( GL_PROJECTION );
+  glLoadIdentity();
+  glOrtho( 0, area.width, area.height, 0, 0, 1 );
+  glMatrixMode( GL_MODELVIEW );
+
   if( children.size() )
     RenderChildren();
 }
