@@ -11,12 +11,14 @@
 
 #include "gui/GUI.hh"
 #include "gui/SampleElement.hh"
+#include "gui/Grid.hh"
 #include "Sample.hh"
 #include "Listener.hh"
 
 
 using namespace std;
 
+using GUI::Grid;
 using GUI::SampleElement;
 
 
@@ -48,7 +50,7 @@ void Render()
 
 void Idle()
 {
-  SampleElement *se = static_cast<SampleElement*>( gui.GetChild( "SAMPLE" ) );
+  SampleElement *se = static_cast<SampleElement*>( gui.GetChild( "GRID" )->GetChild( "SAMPLE" ) );
 
   // Listen and record if needed
   Sample *currentSample = listener.Listen();
@@ -115,7 +117,7 @@ void ProcessKeyInput( unsigned char key, int x, int y )
 
     listener.SetThreshold( threshold );
 
-    SampleElement *se = static_cast<SampleElement*>( gui.GetChild( "SAMPLE" ) );
+    SampleElement *se = static_cast<SampleElement*>( gui.GetChild( "GRID" )->GetChild( "SAMPLE" ) );
     if( se )
     {
       se->SetThreshold( threshold );
@@ -145,8 +147,12 @@ int main( int argc, char **argv )
   SampleElement *se = new SampleElement();
   se->SetThreshold( 200 );
   se->ShowThreshold( true );
+
+  Grid *grid = new Grid( 2, 8 );
+  grid->Add( "SAMPLE", se );
+
   gui.SetArea( 0, 0, 1200, 800 );
-  gui.Add( "SAMPLE", se );
+  gui.Add( "GRID", grid );
 
 
   // Open the default recording device
