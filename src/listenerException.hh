@@ -1,5 +1,4 @@
-#ifndef __LISTENEREXCEPTION_HH__
-#define __LISTENEREXCEPTION_HH__
+#pragma once
 
 #include <exception>
 #include <string>
@@ -18,7 +17,4 @@ class ListenerException : public std::exception
 
   virtual const char* what() const throw();
 };
-
-
-#endif
 

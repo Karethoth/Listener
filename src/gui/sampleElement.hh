@@ -1,8 +1,7 @@
-#ifndef __SAMPLEELEMENT_HH__
-#define __SAMPLEELEMENT_HH__
+#pragma once
 
-#include "Element.hh"
-#include "../Sample.hh"
+#include "element.hh"
+#include "../sample.hh"
 
 
 namespace GUI
@@ -16,8 +15,7 @@ namespace GUI
 
 
    public:
-    SampleElement();
-    SampleElement( Sample* );
+    SampleElement( Sample *sample=nullptr );
     ~SampleElement();
 
     void Render();
@@ -28,6 +26,4 @@ namespace GUI
     void ShowThreshold( bool );
   };
 };
-
-#endif
 

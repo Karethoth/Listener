@@ -1,7 +1,6 @@
-#ifndef __GUI_HH__
-#define __GUI_HH__
+#pragma once
 
-#include "Element.hh"
+#include "element.hh"
 
 namespace GUI
 {
@@ -13,6 +12,4 @@ namespace GUI
     void Render();
   };
 };
-
-#endif
 

@@ -1,4 +1,4 @@
-#include "Element.hh"
+#include "element.hh"
 
 using std::map;
 using std::pair;
@@ -11,22 +11,26 @@ using GUI::Element;
 
 Element::~Element()
 {
-  map<string, Element*>::iterator it;
-  for( it = children.begin(); it != children.end(); ++it )
+  for( auto& child : children )
   {
-    delete it->second;
+    if( child.second )
+    {
+      delete child.second;
+      child.second = nullptr;
+    }
   }
-  children.clear();
 }
 
 
 
 void Element::RenderChildren()
 {
-  map<string, Element*>::iterator it;
-  for( it = children.begin(); it != children.end(); ++it )
+  for( auto& child : children )
   {
-    it->second->Render();
+    if( child.second )
+    {
+      child.second->Render();
+    }
   }
 }
 
@@ -34,8 +38,7 @@ void Element::RenderChildren()
 
 void Element::Render()
 {
-  if( children.size() > 0 )
-    RenderChildren();
+  RenderChildren();
 }
 
 
@@ -45,7 +48,7 @@ bool Element::Add( string key, Element *value )
   value->SetArea( area.x, area.y, area.width, area.height );
 
   pair<map<string, Element*>::iterator, bool> ret;
-  ret = children.insert( pair<string, Element*>( key, value ) );
+  ret = children.insert( pair<string, Element*>{ key, value } );
 
   return ret.second;
 }
@@ -54,10 +57,7 @@ bool Element::Add( string key, Element *value )
 
 bool Element::Remove( string key )
 {
-  if( children.erase( key ) )
-    return true;
-
-  return false;
+  return children.erase( key );
 }
 
 

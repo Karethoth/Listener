@@ -1,12 +1,12 @@
 #ifndef __LISTENER_HH__
 #define __LISTENER_HH__
 
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
+#include <AL/al.h>
+#include <AL/alc.h>
 #include <vector>
 
-#include "Sample.hh"
-#include "ListenerException.hh"
+#include "sample.hh"
+#include "listenerException.hh"
 
 
 class Listener

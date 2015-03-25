@@ -1,5 +1,4 @@
-#ifndef __ELEMENT_HH__
-#define __ELEMENT_HH__
+#pragma once
 
 #include <string>
 #include <map>
@@ -14,16 +13,8 @@ namespace GUI
   };
 
 
-
   class Element
   {
-   protected:
-    std::map<std::string, Element*> children;
-    struct Box area;
-
-    void RenderChildren();
-
-
    public:
     virtual ~Element();
 
@@ -37,8 +28,13 @@ namespace GUI
     void SetArea( struct Box );
     void SetArea( int, int, int, int );
     struct Box GetArea();
+
+   protected:
+    std::map<std::string, Element*> children;
+    struct Box area;
+
+    void RenderChildren();
+
   };
 };
-
-#endif
 

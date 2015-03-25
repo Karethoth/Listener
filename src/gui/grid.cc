@@ -1,4 +1,4 @@
-#include "Grid.hh"
+#include "grid.hh"
 
 using std::map;
 using std::string;

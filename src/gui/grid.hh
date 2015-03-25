@@ -1,7 +1,6 @@
-#ifndef __GRID_HH__
-#define __GRID_HH__
+#pragma once
 
-#include "Element.hh"
+#include "element.hh"
 
 
 namespace GUI
@@ -12,17 +11,14 @@ namespace GUI
    */
   class Grid : public Element
   {
-   private:
-    int columns, rows;
-
-
    public:
     Grid( int, int );
     ~Grid();
 
     void Render();
+
+   private:
+    int columns, rows;
   };
 };
-
-#endif
 

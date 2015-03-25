@@ -1,5 +1,4 @@
-#ifndef __SAMPLE_HH__
-#define __SAMPLE_HH__
+#pragma once
 
 #include <vector>
 
@@ -27,6 +26,4 @@ class Sample
 
   ShortVector& GetData();
 };
-
-#endif
 

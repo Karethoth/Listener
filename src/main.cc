@@ -1,19 +1,24 @@
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
-
+#include <SDL2/SDL.h>
 #ifdef __WIN32__
 #include <windows.h>
 #endif
 
-#include <GL/glut.h>
+#ifdef main
+#undef main
+#endif
+
+#include <AL/alut.h>
+
 #include <iostream>
+#include <iomanip>
 #include <climits>
 
-#include "gui/GUI.hh"
-#include "gui/SampleElement.hh"
-#include "gui/Grid.hh"
-#include "Sample.hh"
-#include "Listener.hh"
+#include "global.hh"
+#include "gui/gui.hh"
+#include "gui/sampleElement.hh"
+#include "gui/grid.hh"
+#include "sample.hh"
+#include "listener.hh"
 
 
 using namespace std;
@@ -33,22 +38,25 @@ GUI::GUI gui;
 Listener listener;
 
 // Threshold
-int threshold = 200;
+int threshold = 1000;
 
 
+Global global{};
 
 void Render()
 {
-  glClear( GL_COLOR_BUFFER_BIT );
+  SDL_SetRenderDrawColor( global.renderer, 0, 0, 0, 255 );
+  SDL_RenderFillRect( global.renderer, nullptr );
 
   gui.Render();
 
-  glutSwapBuffers();
+
+  SDL_RenderPresent( global.renderer );
 }
 
 
 
-void Idle()
+void Update()
 {
   SampleElement *se = static_cast<SampleElement*>( gui.GetChild( "GRID" )->GetChild( "SAMPLE" ) );
 
@@ -60,22 +68,22 @@ void Idle()
     if( currentSample->GetData().size() > 50 )
     {
       se->SetSample( currentSample );
-      glutPostRedisplay();
+      //glutPostRedisplay();
       return;
     }
   }
 
   std::vector<Sample*> *finished = listener.GetFinishedSamples();
   if( finished->size() <= 0 )
+  {
     return;
-
+  }
 
   if( se )
   {
     Sample *sample = *(finished->begin());
     finished->erase( finished->begin() );
     se->SetSample( sample );
-    glutPostRedisplay();
   }
 
   // Memory leak:
@@ -104,7 +112,7 @@ void ProcessKeyInput( unsigned char key, int x, int y )
 
     // If ESC
     case 27:
-      exit( 0 );
+      //exit( 0 );
       break;
   }
 
@@ -121,61 +129,100 @@ void ProcessKeyInput( unsigned char key, int x, int y )
     if( se )
     {
       se->SetThreshold( threshold );
-      glutPostRedisplay();
+      //glutPostRedisplay();
     }
   }
 }
 
+
+void HandleSDLEvents()
+{
+  SDL_Event e;
+  while( SDL_PollEvent( &e ) )
+  {
+    switch( e.type )
+    {
+      case SDL_QUIT:
+        global.shouldQuit = true;
+        break;
+    }
+  }
+}
 
 
 int main( int argc, char **argv )
 {
 
   // Init glut
-  glutInit( &argc, argv );
-  glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA );
-  glutInitWindowPosition( 0, 0 );
-  glutInitWindowSize( 1200, 800 );
-  glutCreateWindow( "Listener" );
+  //glutInit( &argc, argv );
+  //glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA );
+  //glutInitWindowPosition( 0, 0 );
+  //glutInitWindowSize( 1200, 800 );
+  //glutCreateWindow( "Listener" );
 
-  glutDisplayFunc( Render );
-  glutIdleFunc( Idle );
-  glutKeyboardFunc( ProcessKeyInput );
+  //glutDisplayFunc( Render );
+  //glutIdleFunc( Idle );
+  //glutKeyboardFunc( ProcessKeyInput );
+  //
+  if( SDL_Init(SDL_INIT_VIDEO) != 0 )
+  {
+    cout << "SDL_Init failed!" << endl;
+    return -1;
+  }
 
+  global.window = SDL_CreateWindow(
+    "Listener",
+    SDL_WINDOWPOS_UNDEFINED,
+    SDL_WINDOWPOS_UNDEFINED,
+    global.windowWidth,
+    global.windowHeight,
+    SDL_WINDOW_SHOWN
+  );
+
+
+  global.renderer = SDL_CreateRenderer( global.window, -1, 0 );
 
   // Set the GUI up
+  Grid *grid = new Grid( 1, 8 );
+
   SampleElement *se = new SampleElement();
   se->SetThreshold( 200 );
   se->ShowThreshold( true );
 
-  Grid *grid = new Grid( 2, 8 );
   grid->Add( "SAMPLE", se );
 
   gui.SetArea( 0, 0, 1200, 800 );
   gui.Add( "GRID", grid );
 
+  alutInit( 0, nullptr );
 
   // Open the default recording device
   alGetError();
-  ALCdevice *device = alcCaptureOpenDevice( NULL, SRATE, AL_FORMAT_MONO16, SSIZE );
-  if( alGetError() != AL_NO_ERROR )
+  ALCdevice *device = alcCaptureOpenDevice( nullptr, SRATE, AL_FORMAT_MONO16, SSIZE );
+  auto alError = alGetError();
+  if( alError != AL_NO_ERROR )
   {
-      return 0;
+    cout << "alcCaptureOpenDevice failed: " << hex << alError << endl;
+    alutExit();
+    return 1;
   }
 
   // Initialize the Listener
   try
   {
-    listener.Init( device,
-                   44100,
-                   AL_FORMAT_MONO16,
-                   400,
-                   threshold,
-                   4000 );
+    listener.Init(
+      device,
+      44100,
+      AL_FORMAT_MONO16,
+      400,
+      threshold,
+      14000
+    );
   }
   catch( ListenerException &e )
   {
     std::cout << "ERROR - " << e.what() << "\n";
+    alutExit();
     return 1;
   }
 
@@ -185,13 +232,19 @@ int main( int argc, char **argv )
 
 
   // Start the main loop
-  glutMainLoop();
+  while( !global.shouldQuit )
+  {
+    HandleSDLEvents();
+    Update();
+    Render();
+  }
 
 
   // Stop capturing
   alcCaptureStop( device );
   alcCaptureCloseDevice( device );
 
+  alutExit();
   return 0;
 }
 

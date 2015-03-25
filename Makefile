@@ -1,17 +1,17 @@
 TGT = listener
 CC  = g++
 
-CFLAGS = -Wall -c
-LFLAGS = -lOpenAL32 -lglut -lopengl32 -lglu32 -g
+CFLAGS = -std=c++0x -Wall -c -g
+LFLAGS = -lopenal -lalut -lSDL2 -g
 
 SRCS = \
-	src/Sample.cc \
-	src/gui/Element.cc \
-	src/gui/GUI.cc \
-	src/gui/Grid.cc \
-	src/gui/SampleElement.cc \
-	src/ListenerException.cc \
-	src/Listener.cc \
+	src/sample.cc \
+	src/gui/element.cc \
+	src/gui/gui.cc \
+	src/gui/grid.cc \
+	src/gui/sampleElement.cc \
+	src/listenerException.cc \
+	src/listener.cc \
 	src/main.cc \
 
 OBJS = $(patsubst %,obj/%,$(subst src/,,$(SRCS:.cc=.o)))

@@ -1,4 +1,4 @@
-#include "Listener.hh"
+#include "listener.hh"
 #include <iostream>
 #include <cstdio>
 
@@ -7,9 +7,9 @@ using std::vector;
 
 Listener::Listener()
 {
-  device = NULL;
-  buffer = NULL;
-  currentSample = NULL;
+  device = nullptr;
+  buffer = nullptr;
+  currentSample = nullptr;
   
   isRecording = false;
 }
@@ -19,7 +19,9 @@ Listener::Listener()
 Listener::~Listener()
 {
   if( buffer )
+  {
     delete[] buffer;
+  }
 }
 
 
@@ -42,13 +44,19 @@ void Listener::Init( ALCdevice *device,
 
   // Check if parameters are valid:
   if( !device )
+  {
     throw( ListenerException( "Listener::Init(..) - No device given!", __FILE__, __LINE__ ) );
+  }
 
   if( bufferSize <= 0 )
+  {
     throw( ListenerException( "Listener::Init(..) - Buffer size must be larger than 0!", __FILE__, __LINE__ ) );
+  }
 
   if( format != AL_FORMAT_MONO16 )
+  {
     throw( ListenerException( "Listener::Init(..) - Wrong format, currently only MONO16 is supported!", __FILE__, __LINE__ ) );
+  }
 
 
   // Allocate the buffer:
@@ -136,7 +144,7 @@ void Listener::HandleAudioSamples()
   sectionStart = audioSampleVector.begin();
 
   // Loop through audio samples in the vector
-  for( it = audioSampleVector.begin();
+  for( it  = audioSampleVector.begin();
        it != audioSampleVector.end();
        ++it )
   {
@@ -144,7 +152,8 @@ void Listener::HandleAudioSamples()
     if( isRecording )
     {
       // If current audio sample is below the treshold
-      if( *it < threshold && *it > 0-threshold )
+      if( *it < threshold &&
+          *it > 0-threshold )
       {
         // If we haven't reached the maximum count
         // of sequental non-triggering audio samples
@@ -158,7 +167,6 @@ void Listener::HandleAudioSamples()
 
         printf( "Stopping recording!\r\n" );
         isRecording = false;
-        sinceTriggeredThreshold = 0;
 
         // Finalize the current sample
         currentSample->Append( sectionStart, it );
