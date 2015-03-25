@@ -18,12 +18,10 @@ Grid::Grid( int columns, int rows )
 
 Grid::~Grid()
 {
-  map<string, Element*>::iterator it;
-  for( it = children.begin(); it != children.end(); ++it )
+  for( auto& child : children )
   {
-    delete it->second;
+    delete child.second;
   }
-  children.clear();
 }
 
 
@@ -47,7 +45,9 @@ void Grid::Render()
     for( int i=0; i < columns; ++i )
     {
       if( it == children.end() )
+      {
         return;
+      }
 
       it->second->SetArea( childArea );
       it->second->Render();

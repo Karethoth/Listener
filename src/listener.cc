@@ -7,11 +7,10 @@ using std::vector;
 
 Listener::Listener()
 {
-  device = nullptr;
-  buffer = nullptr;
+  isRecording   = false;
+  device        = nullptr;
+  buffer        = nullptr;
   currentSample = nullptr;
-  
-  isRecording = false;
 }
 
 

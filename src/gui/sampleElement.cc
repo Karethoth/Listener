@@ -124,7 +124,7 @@ void SampleElement::Render()
   for( it = data.begin(); it != data.end(); )
   {
     xTmp = ax + 1 + (it - data.begin()) * xRatio;
-    yTmp = ay + yMiddle - (*it) * yRatio;
+    yTmp = yMiddle - (*it) * yRatio;
 
     if( xPrev != 0.f )
     {
@@ -134,7 +134,7 @@ void SampleElement::Render()
     yPrev = yTmp;
 
     it += stepSize;
-    if( it-data.begin() > data.size() )
+    if( it-data.begin() > (unsigned int)data.size() )
     {
       break;
     }

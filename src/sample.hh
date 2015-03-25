@@ -13,13 +13,9 @@ typedef std::vector<short>::iterator ShortVectorIterator;
 class Sample
 {
  private:
-  std::vector<short> data;
-
+  ShortVector data;
 
  public:
-  Sample();
-  ~Sample();
-
   // Append data to the sample
   void Append( ShortVectorIterator &first,
                const ShortVectorIterator &last );

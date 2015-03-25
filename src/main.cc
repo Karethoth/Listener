@@ -16,6 +16,7 @@
 #include "global.hh"
 #include "gui/gui.hh"
 #include "gui/sampleElement.hh"
+#include "gui/fftElement.hh"
 #include "gui/grid.hh"
 #include "sample.hh"
 #include "listener.hh"
@@ -25,6 +26,7 @@ using namespace std;
 
 using GUI::Grid;
 using GUI::SampleElement;
+using GUI::FFTElement;
 
 
 // Consts
@@ -58,17 +60,31 @@ void Render()
 
 void Update()
 {
-  SampleElement *se = static_cast<SampleElement*>( gui.GetChild( "GRID" )->GetChild( "SAMPLE" ) );
+  SampleElement *se = static_cast<SampleElement*>(
+    gui.GetChild( "GRID" )->GetChild( "0-SAMPLE" )
+  );
+
+  FFTElement *ffte = static_cast<FFTElement*>(
+    gui.GetChild( "GRID" )->GetChild( "1-FFT" )
+  );
 
   // Listen and record if needed
   Sample *currentSample = listener.Listen();
 
-  if( currentSample && se )
+  if( currentSample )
   {
-    if( currentSample->GetData().size() > 50 )
+    if( currentSample->GetData().size() >= 256 )
     {
-      se->SetSample( currentSample );
-      //glutPostRedisplay();
+      if( se )
+      {
+        se->SetSample( currentSample );
+      }
+
+      if( ffte )
+      {
+        ffte->Generate( currentSample );
+      }
+
       return;
     }
   }
@@ -79,6 +95,7 @@ void Update()
     return;
   }
 
+  // TODO: Check what's going on here
   if( se )
   {
     Sample *sample = *(finished->begin());
@@ -86,7 +103,6 @@ void Update()
     se->SetSample( sample );
   }
 
-  // Memory leak:
   finished->clear();
 }
 
@@ -125,7 +141,7 @@ void ProcessKeyInput( unsigned char key, int x, int y )
 
     listener.SetThreshold( threshold );
 
-    SampleElement *se = static_cast<SampleElement*>( gui.GetChild( "GRID" )->GetChild( "SAMPLE" ) );
+    SampleElement *se = static_cast<SampleElement*>( gui.GetChild( "GRID" )->GetChild( "0-SAMPLE" ) );
     if( se )
     {
       se->SetThreshold( threshold );
@@ -179,8 +195,9 @@ int main( int argc, char **argv )
     SDL_WINDOW_SHOWN
   );
 
-
   global.renderer = SDL_CreateRenderer( global.window, -1, 0 );
+
+  SDL_SetRenderDrawBlendMode( global.renderer, SDL_BLENDMODE_BLEND );
 
   // Set the GUI up
   Grid *grid = new Grid( 1, 8 );
@@ -188,8 +205,10 @@ int main( int argc, char **argv )
   SampleElement *se = new SampleElement();
   se->SetThreshold( 200 );
   se->ShowThreshold( true );
+  grid->Add( "0-SAMPLE", se );
 
-  grid->Add( "SAMPLE", se );
+  FFTElement *ffte = new FFTElement();
+  grid->Add( "1-FFT", ffte );
 
   gui.SetArea( 0, 0, 1200, 800 );
   gui.Add( "GRID", grid );

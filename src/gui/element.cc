@@ -64,7 +64,12 @@ bool Element::Remove( string key )
 
 Element* Element::GetChild( string key )
 {
-  return children[key];
+  if( children.count( key ) )
+  {
+    return children[key];
+  }
+
+  return nullptr;
 }
 
 
