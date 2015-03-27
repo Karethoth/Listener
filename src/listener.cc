@@ -7,6 +7,7 @@ using std::vector;
 
 Listener::Listener()
 {
+  recordAlways  = true;
   isRecording   = false;
   device        = nullptr;
   buffer        = nullptr;
@@ -148,7 +149,7 @@ void Listener::HandleAudioSamples()
        ++it )
   {
     // If we are recording
-    if( isRecording )
+    if( isRecording && !recordAlways )
     {
       // If current audio sample is below the treshold
       if( *it < threshold &&
@@ -183,7 +184,7 @@ void Listener::HandleAudioSamples()
       }
     }
     // If we're not recording, but treshold gets triggered
-    else if( *it >= threshold || *it <= 0-threshold )
+    else if( !recordAlways && (*it >= threshold || *it <= 0-threshold) )
     {
       printf( "Starting recording!\r\n" );
       isRecording = true;
@@ -193,7 +194,9 @@ void Listener::HandleAudioSamples()
       sectionStart = it;
 
       if( currentSample )
+      {
         delete currentSample;
+      }
 
       currentSample = new Sample();
     }
@@ -208,7 +211,7 @@ void Listener::HandleAudioSamples()
   // and we are still recording, we need
   // to push the audio samples to the
   // current sample
-  if( isRecording && currentSample )
+  if( (isRecording || recordAlways) && currentSample )
   {
     currentSample->Append( sectionStart, audioSampleVector.end() );
   }

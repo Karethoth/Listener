@@ -32,6 +32,7 @@ class Listener
   
   Sample *currentSample;        // The current sample.
   bool    isRecording;          // True if we are recording audio samples now.
+  bool    recordAlways;
 
   // And to keep record of finished samples:
   std::vector<Sample*> finishedSamples;

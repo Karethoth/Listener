@@ -6,7 +6,7 @@
 #include <complex>
 #include <kiss_fft.hh>
 
-const int fftElementCount = 2048;
+const int fftElementCount = 4096;
 
 namespace GUI
 {

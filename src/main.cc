@@ -17,6 +17,7 @@
 #include "gui/gui.hh"
 #include "gui/sampleElement.hh"
 #include "gui/fftElement.hh"
+#include "gui/waterfallElement.hh"
 #include "gui/grid.hh"
 #include "sample.hh"
 #include "listener.hh"
@@ -27,6 +28,7 @@ using namespace std;
 using GUI::Grid;
 using GUI::SampleElement;
 using GUI::FFTElement;
+using GUI::WaterfallElement;
 
 
 // Consts
@@ -52,7 +54,6 @@ void Render()
 
   gui.Render();
 
-
   SDL_RenderPresent( global.renderer );
 }
 
@@ -66,6 +67,10 @@ void Update()
 
   FFTElement *ffte = static_cast<FFTElement*>(
     gui.GetChild( "GRID" )->GetChild( "1-FFT" )
+  );
+
+  WaterfallElement *wfe = static_cast<WaterfallElement*>(
+    gui.GetChild( "GRID" )->GetChild( "2-FALL" )
   );
 
   // Listen and record if needed
@@ -83,6 +88,12 @@ void Update()
       if( ffte )
       {
         ffte->Generate( currentSample );
+
+        if( wfe )
+		{
+          auto freqMem = ffte->GetFrequencyMemory();
+          wfe->Update( freqMem, fftElementCount );
+        }
       }
 
       return;
@@ -168,18 +179,6 @@ void HandleSDLEvents()
 
 int main( int argc, char **argv )
 {
-
-  // Init glut
-  //glutInit( &argc, argv );
-  //glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGBA );
-  //glutInitWindowPosition( 0, 0 );
-  //glutInitWindowSize( 1200, 800 );
-  //glutCreateWindow( "Listener" );
-
-  //glutDisplayFunc( Render );
-  //glutIdleFunc( Idle );
-  //glutKeyboardFunc( ProcessKeyInput );
-  //
   if( SDL_Init(SDL_INIT_VIDEO) != 0 )
   {
     cout << "SDL_Init failed!" << endl;
@@ -200,7 +199,7 @@ int main( int argc, char **argv )
   SDL_SetRenderDrawBlendMode( global.renderer, SDL_BLENDMODE_BLEND );
 
   // Set the GUI up
-  Grid *grid = new Grid( 1, 8 );
+  Grid *grid = new Grid( 1, 3 );
 
   SampleElement *se = new SampleElement();
   se->SetThreshold( 200 );
@@ -210,7 +209,10 @@ int main( int argc, char **argv )
   FFTElement *ffte = new FFTElement();
   grid->Add( "1-FFT", ffte );
 
-  gui.SetArea( 0, 0, 1200, 800 );
+  WaterfallElement *wfe = new WaterfallElement();
+  grid->Add( "2-FALL", wfe );
+
+  gui.SetArea( 0, 0, global.windowWidth, global.windowHeight );
   gui.Add( "GRID", grid );
 
   alutInit( 0, nullptr );

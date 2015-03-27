@@ -54,12 +54,11 @@ void FFTElement::Render()
     return;
   }
 
-  SDL_SetRenderDrawColor( global.renderer, 255, 0, 0, 255 );
-
   auto xCurr = 0;
   auto yCurr = 0;
   auto xPrev = 0;
   auto yPrev = 0;
+  auto valPrev = 0.f;
 
   const auto finalElementCount = fftElementCount/3;
 
@@ -72,16 +71,20 @@ void FFTElement::Render()
       val = 1.f;
     }
 
+    auto colorVal = (valPrev + val) / 2.f;
+
     xCurr = area.x + (float)i / finalElementCount * area.width;
     yCurr = (area.y + area.height) - (val * area.height);
 
     if( i != 0 )
     {
+      SDL_SetRenderDrawColor( global.renderer, 255, 255-colorVal*255, 255-colorVal*255, 255 );
       SDL_RenderDrawLine( global.renderer, xPrev, yPrev, xCurr, yCurr );
     }
     
     xPrev = xCurr;
     yPrev = yCurr;
+    valPrev = val;
   }
 
 }

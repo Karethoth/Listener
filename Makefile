@@ -1,7 +1,7 @@
 TGT = listener
 CC  = g++
 
-CFLAGS = -std=c++0x -Wall -c -g -Ikissfft/
+CFLAGS = -std=c++0x -Wall -c -flto -O3 -Ikissfft/
 LFLAGS = -lopenal -lalut -lSDL2 -g
 
 SRCS = \
@@ -12,6 +12,7 @@ SRCS = \
 	src/gui/grid.cc \
 	src/gui/sampleElement.cc \
 	src/gui/fftElement.cc \
+	src/gui/waterfallElement.cc \
 	src/listenerException.cc \
 	src/listener.cc \
 	src/main.cc \
